@@ -101,10 +101,15 @@ class _HomePageState extends State<HomePage> {
               remaining: _budget!.wants,
               percent: _budget!.wantsPercent,
               color: const Color(0xFFCC5A7A),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const WantsPage()),
-              ),
+              onTap: () async {
+                final updated = await Navigator.push<BudgetModel>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => WantsPage(budget: _budget!),
+                  ),
+                );
+                if (updated != null) setState(() => _budget = updated);
+              },
             ),
             const SizedBox(height: 12),
             _sectionCard(
