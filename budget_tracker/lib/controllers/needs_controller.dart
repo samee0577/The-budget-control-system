@@ -1,12 +1,32 @@
 import '../models/expense_item.dart';
+import '../models/transaction_model.dart';
 
 class NeedsController {
   static const List<ExpenseItem> needsItems = [
-    ExpenseItem(id: 'recharge', name: 'Mobile Recharge', basePrice: 300, emoji: '📱'),
+    ExpenseItem(
+      id: 'recharge',
+      name: 'Mobile Recharge',
+      basePrice: 300,
+      emoji: '📱',
+    ),
     ExpenseItem(id: 'petrol', name: 'Petrol', basePrice: 500, emoji: '⛽'),
     ExpenseItem(id: 'grooming', name: 'Grooming', basePrice: 170, emoji: '✂️'),
     ExpenseItem(id: 'manual', name: 'Custom', basePrice: 0, emoji: '➕'),
   ];
+
+  List<TransactionEntry> buildTransactions() {
+    return droppedItems
+        .map(
+          (d) => TransactionEntry(
+            id: '${d.item.id}_${DateTime.now().millisecondsSinceEpoch}',
+            emoji: d.item.emoji,
+            name: d.displayName,
+            amount: d.totalPrice,
+            dateTime: DateTime.now(),
+          ),
+        )
+        .toList();
+  }
 
   final List<DroppedExpense> droppedItems = [];
 
@@ -26,9 +46,7 @@ class NeedsController {
   }
 
   void updateItem(String itemId, {int? quantity, double? price}) {
-    final item = droppedItems
-        .where((d) => d.item.id == itemId)
-        .firstOrNull;
+    final item = droppedItems.where((d) => d.item.id == itemId).firstOrNull;
     if (item == null) return;
     if (quantity != null) item.quantity = quantity;
     if (price != null) item.priceOverride = price;

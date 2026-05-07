@@ -3,6 +3,8 @@ import '../models/budget_model.dart';
 import '../models/expense_item.dart';
 import '../controllers/savings_controller.dart';
 import '../controllers/budget_controller.dart';
+import '../controllers/transaction_controller.dart';
+import '../models/transaction_model.dart';
 
 class SavingsPage extends StatefulWidget {
   final BudgetModel budget;
@@ -173,6 +175,133 @@ class _SavingsPageState extends State<SavingsPage> {
     );
   }
 
+  Widget _transactionLog() {
+    return FutureBuilder<List<TransactionEntry>>(
+      future: TransactionController.loadTransactions(section: 'savings'),
+      builder: (context, snapshot) {
+        final transactions = snapshot.data ?? [];
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Transactions',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Color(0xFF6B6B8A),
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              constraints: const BoxConstraints(minHeight: 80, maxHeight: 220),
+              decoration: BoxDecoration(
+                color: const Color(0xFF16162A),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFF2A2A40)),
+              ),
+              child: transactions.isEmpty
+                  ? const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Text(
+                          'No transactions yet',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF3A3A5A),
+                          ),
+                        ),
+                      ),
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      shrinkWrap: true,
+                      itemCount: transactions.length,
+                      separatorBuilder: (_, __) => const Divider(
+                        color: Color(0xFF2A2A40),
+                        height: 1,
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+                      itemBuilder: (context, index) {
+                        final t = transactions[index];
+                        return _transactionRow(t);
+                      },
+                    ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _transactionRow(TransactionEntry t) {
+    final now = DateTime.now();
+    final isToday =
+        t.dateTime.day == now.day &&
+        t.dateTime.month == now.month &&
+        t.dateTime.year == now.year;
+
+    final dateLabel = isToday
+        ? 'Today ${_formatTime(t.dateTime)}'
+        : '${t.dateTime.day}/${t.dateTime.month}/${t.dateTime.year} ${_formatTime(t.dateTime)}';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        children: [
+          Text(t.emoji, style: const TextStyle(fontSize: 18)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  t.name,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFFE8E8F5),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  dateLabel,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFF6B6B8A),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '- ₹${t.amount.toStringAsFixed(0)}',
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFFCC5A7A),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatTime(DateTime dt) {
+    final hour = dt.hour > 12
+        ? dt.hour - 12
+        : dt.hour == 0
+        ? 12
+        : dt.hour;
+    final min = dt.minute.toString().padLeft(2, '0');
+    final period = dt.hour >= 12 ? 'PM' : 'AM';
+    return '$hour:$min $period';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -201,6 +330,8 @@ class _SavingsPageState extends State<SavingsPage> {
           _dropZone(),
           const Spacer(),
           _draggableItemsRow(),
+          const SizedBox(height: 18),
+          _transactionLog(),
           const SizedBox(height: 18),
           _doneButton(),
         ],
@@ -234,7 +365,7 @@ class _SavingsPageState extends State<SavingsPage> {
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFFCC8A3E),
+                  color: Color(0xFF2EB89A),
                 ),
               ),
             ],
@@ -329,7 +460,7 @@ class _SavingsPageState extends State<SavingsPage> {
             item.basePrice > 0
                 ? '₹${item.basePrice.toStringAsFixed(0)}'
                 : 'custom',
-            style: const TextStyle(fontSize: 10, color: Color(0xFFCC8A3E)),
+            style: const TextStyle(fontSize: 10, color: Color(0xFF2EB89A)),
           ),
         ],
       ),
@@ -446,7 +577,7 @@ class _SavingsPageState extends State<SavingsPage> {
                   '₹${dropped.totalPrice.toStringAsFixed(0)}',
                   style: const TextStyle(
                     fontSize: 11,
-                    color: Color(0xFFCC8A3E),
+                    color: Color(0xFF2EB89A),
                   ),
                 ),
               ],
@@ -474,6 +605,13 @@ class _SavingsPageState extends State<SavingsPage> {
       child: GestureDetector(
         onTap: hasItems
             ? () async {
+                final transactions = _controller.buildTransactions();
+                for (final t in transactions) {
+                  await TransactionController.saveTransaction(
+                    section: 'savings',
+                    entry: t,
+                  );
+                }
                 final newSavings = widget.budget.savings - _controller.totalExpense;
                 final updated = widget.budget.copyWith(savings: newSavings);
                 await BudgetController.saveBudget(updated);

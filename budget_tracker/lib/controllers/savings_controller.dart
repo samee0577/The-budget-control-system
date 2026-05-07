@@ -1,9 +1,24 @@
 import '../models/expense_item.dart';
+import '../models/transaction_model.dart';
 
 class SavingsController {
   static const List<ExpenseItem> savingsItems = [
     ExpenseItem(id: 'Bissi', name: 'Bissi', basePrice: 2000, emoji: '💵'),
   ];
+
+  List<TransactionEntry> buildTransactions() {
+    return droppedItems
+        .map(
+          (d) => TransactionEntry(
+            id: '${d.item.id}_${DateTime.now().millisecondsSinceEpoch}',
+            emoji: d.item.emoji,
+            name: d.displayName,
+            amount: d.totalPrice,
+            dateTime: DateTime.now(),
+          ),
+        )
+        .toList();
+  }
 
   final List<DroppedExpense> droppedItems = [];
 
