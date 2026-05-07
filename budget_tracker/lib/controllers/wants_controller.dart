@@ -1,13 +1,33 @@
 import '../models/expense_item.dart';
+import '../models/transaction_model.dart';
 
 class WantsController {
   static const List<ExpenseItem> wantsItems = [
     ExpenseItem(id: 'drink', name: 'Drink', basePrice: 20, emoji: '🥤'),
     ExpenseItem(id: 'food', name: 'Snack', basePrice: 200, emoji: '🍔'),
     ExpenseItem(id: 'clothes', name: 'Clothes', basePrice: 500, emoji: '👕'),
-    ExpenseItem(id: 'entertainment', name: 'Entertainment', basePrice: 200, emoji: '🎬'),
+    ExpenseItem(
+      id: 'entertainment',
+      name: 'Entertainment',
+      basePrice: 200,
+      emoji: '🎬',
+    ),
     ExpenseItem(id: 'manual', name: 'Custom', basePrice: 0, emoji: '➕'),
   ];
+
+  List<TransactionEntry> buildTransactions() {
+    return droppedItems
+        .map(
+          (d) => TransactionEntry(
+            id: '${d.item.id}_${DateTime.now().millisecondsSinceEpoch}',
+            emoji: d.item.emoji,
+            name: d.displayName,
+            amount: d.totalPrice,
+            dateTime: DateTime.now(),
+          ),
+        )
+        .toList();
+  }
 
   final List<DroppedExpense> droppedItems = [];
 
