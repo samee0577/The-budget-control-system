@@ -18,6 +18,14 @@ class _WantsPageState extends State<WantsPage> {
   final WantsController _controller = WantsController();
   bool _isDragOver = false;
 
+  late BudgetModel _localBudget;
+
+  @override
+  void initState() {
+    super.initState();
+    _localBudget = widget.budget;
+  }
+
   void _showEditPopup(DroppedExpense dropped) {
     final priceController = TextEditingController(
       text: dropped.priceOverride.toStringAsFixed(0),
@@ -340,7 +348,7 @@ class _WantsPageState extends State<WantsPage> {
   }
 
   Widget _remainingBar() {
-    final remaining = widget.budget.wants - _controller.totalExpense;
+    final remaining = _localBudget.wants - _controller.totalExpense;
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       padding: const EdgeInsets.all(16),
@@ -612,12 +620,41 @@ class _WantsPageState extends State<WantsPage> {
                     entry: t,
                   );
                 }
-                final newWants =
-                    widget.budget.wants - _controller.totalExpense;
-                final updated = widget.budget.copyWith(wants: newWants);
+                final newWants = _localBudget.wants - _controller.totalExpense;
+                final updated = _localBudget.copyWith(wants: newWants);
                 await BudgetController.saveBudget(updated);
+
+                setState(() {
+                  _localBudget = updated;
+                  _controller.droppedItems.clear();
+                });
+
                 if (!mounted) return;
-                Navigator.pop(context, updated);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        const Icon(
+                          Icons.check_circle_outline,
+                          color: Color(0xFFCC5A7A),
+                          size: 18,
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Logged to Wants',
+                          style: TextStyle(color: Color(0xFFE8E8F5)),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: const Color(0xFF16162A),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: const BorderSide(color: Color(0xFF2A2A40)),
+                    ),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
               }
             : null,
         child: Container(

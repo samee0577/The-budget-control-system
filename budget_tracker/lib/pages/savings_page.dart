@@ -17,6 +17,13 @@ class SavingsPage extends StatefulWidget {
 class _SavingsPageState extends State<SavingsPage> {
   final SavingsController _controller = SavingsController();
   bool _isDragOver = false;
+  late BudgetModel _localBudget;
+
+  @override
+  void initState() {
+    super.initState();
+    _localBudget = widget.budget;
+  }
 
   void _showEditPopup(DroppedExpense dropped) {
     final priceController = TextEditingController(
@@ -340,7 +347,7 @@ class _SavingsPageState extends State<SavingsPage> {
   }
 
   Widget _remainingBar() {
-    final remaining = widget.budget.savings - _controller.totalExpense;
+    final remaining = _localBudget.savings - _controller.totalExpense;
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       padding: const EdgeInsets.all(16),
@@ -612,11 +619,41 @@ class _SavingsPageState extends State<SavingsPage> {
                     entry: t,
                   );
                 }
-                final newSavings = widget.budget.savings - _controller.totalExpense;
-                final updated = widget.budget.copyWith(savings: newSavings);
+                final newSavings = _localBudget.savings - _controller.totalExpense;
+                final updated = _localBudget.copyWith(savings: newSavings);
                 await BudgetController.saveBudget(updated);
+
+                setState(() {
+                  _localBudget = updated;
+                  _controller.droppedItems.clear();
+                });
+
                 if (!mounted) return;
-                Navigator.pop(context, updated);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        const Icon(
+                          Icons.check_circle_outline,
+                          color: Color(0xFFCC5A7A),
+                          size: 18,
+                        ),
+                        const SizedBox(width: 10),
+                        const Text(
+                          'Logged to Savings',
+                          style: TextStyle(color: Color(0xFFE8E8F5)),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: const Color(0xFF16162A),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: const BorderSide(color: Color(0xFF2A2A40)),
+                    ),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
               }
             : null,
         child: Container(

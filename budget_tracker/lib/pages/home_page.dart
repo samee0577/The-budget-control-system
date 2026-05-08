@@ -148,13 +148,13 @@ class _HomePageState extends State<HomePage> {
               percent: _budget!.wantsPercent,
               color: const Color(0xFFCC5A7A),
               onTap: () async {
-                final updated = await Navigator.push<BudgetModel>(
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => WantsPage(budget: _budget!),
                   ),
                 );
-                if (updated != null) setState(() => _budget = updated);
+                _loadBudget();
               },
             ),
             const SizedBox(height: 12),
@@ -165,13 +165,13 @@ class _HomePageState extends State<HomePage> {
               percent: _budget!.savingsPercent,
               color: const Color(0xFF2EB89A),
               onTap: () async {
-                final updated = await Navigator.push<BudgetModel>(
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => SavingsPage(budget: _budget!),
                   ),
                 );
-                if (updated != null) setState(() => _budget = updated);
+                _loadBudget();
               },
             ),
             const SizedBox(height: 28),
