@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/budget_controller.dart';
+import '../controllers/compensate_controller.dart';
 import '../models/budget_model.dart';
 import './setup_page.dart';
 import './needs_page.dart';
@@ -16,6 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   BudgetModel? _budget;
+  double _compensateOwed = 0;
 
   @override
   void initState() {
@@ -25,15 +27,23 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _loadBudget() async {
     final budget = await BudgetController.loadBudget();
-    setState(() => _budget = budget);
+    final compensate = CompensateController();
+    await compensate.loadCards();
+    setState(() {
+      _budget = budget;
+      _compensateOwed = compensate.totalOwed;
+    });
   }
 
   Widget _compensateCard() {
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const CompensatePage()),
-      ),
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CompensatePage()),
+        );
+        _loadBudget();
+      },
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -88,7 +98,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: const Color(0xFF0F0F1A),
         elevation: 0,
         title: const Text(
-          'Budget Tracker',
+          'Spndwell',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
