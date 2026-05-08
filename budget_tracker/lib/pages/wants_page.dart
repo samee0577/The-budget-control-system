@@ -195,15 +195,15 @@ class _WantsPageState extends State<WantsPage> {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                'Transactions',
+                'Transaction logs',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 14,
                   color: Color(0xFF6B6B8A),
-                  letterSpacing: 1.5,
+                  letterSpacing: 1,
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               constraints: const BoxConstraints(minHeight: 80, maxHeight: 220),
@@ -279,7 +279,7 @@ class _WantsPageState extends State<WantsPage> {
                 Text(
                   dateLabel,
                   style: const TextStyle(
-                    fontSize: 10,
+                    fontSize: 12,
                     color: Color(0xFF6B6B8A),
                   ),
                 ),
@@ -291,7 +291,7 @@ class _WantsPageState extends State<WantsPage> {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: Color(0xFFCC5A7A),
+              color: Color.fromARGB(255, 237, 248, 255),
             ),
           ),
         ],
@@ -351,7 +351,10 @@ class _WantsPageState extends State<WantsPage> {
               const SizedBox(height: 4),
               Text(
                 '- ₹${_controller.totalExpense.toStringAsFixed(0)}',
-                style: const TextStyle(fontSize: 15, color: Color(0xFFCC5A7A)),
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Color.fromARGB(255, 255, 237, 237),
+                ),
               ),
             ],
           ),
@@ -599,7 +602,7 @@ class _WantsPageState extends State<WantsPage> {
                       children: [
                         const Icon(
                           Icons.check_circle_outline,
-                          color: Color(0xFFCC5A7A),
+                          color: Color.fromARGB(255, 45, 226, 123),
                           size: 18,
                         ),
                         const SizedBox(width: 10),
@@ -612,10 +615,10 @@ class _WantsPageState extends State<WantsPage> {
                     backgroundColor: const Color(0xFF16162A),
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                       side: const BorderSide(color: Color(0xFF2A2A40)),
                     ),
-                    duration: const Duration(seconds: 2),
+                    duration: const Duration(seconds: 1),
                   ),
                 );
               }
@@ -650,7 +653,7 @@ class _WantsPageState extends State<WantsPage> {
     );
   }
 
-    @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -673,9 +676,8 @@ class _WantsPageState extends State<WantsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _remainingBar(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           _transactionLog(),
-          const SizedBox(height: 24),
           const Spacer(),
           _dropZone(),
           const SizedBox(height: 14),
@@ -686,5 +688,4 @@ class _WantsPageState extends State<WantsPage> {
       ),
     );
   }
-
 }

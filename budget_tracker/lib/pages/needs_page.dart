@@ -24,7 +24,6 @@ class _NeedsPageState extends State<NeedsPage> {
     _localBudget = widget.budget;
   }
 
-
   void _showEditPopup(DroppedExpense dropped) {
     final priceController = TextEditingController(
       text: dropped.priceOverride.toStringAsFixed(0),
@@ -194,11 +193,11 @@ class _NeedsPageState extends State<NeedsPage> {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                'Transactions',
+                'Transaction logs',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 14,
                   color: Color(0xFF6B6B8A),
-                  letterSpacing: 1.5,
+                  letterSpacing: 1,
                 ),
               ),
             ),
@@ -309,42 +308,6 @@ class _NeedsPageState extends State<NeedsPage> {
     return '$hour:$min $period';
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0F0F1A),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF6B6B8A)),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Needs',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFFE8E8F5),
-          ),
-        ),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _remainingBar(),
-          const SizedBox(height: 24),
-          _transactionLog(),
-          const SizedBox(height: 12),
-          _draggableItemsRow(),
-          const SizedBox(height: 18),
-          _dropZone(),
-          const SizedBox(height: 18),
-          _doneButton(),
-        ],
-      ),
-    );
-  }
-
   Widget _remainingBar() {
     final remaining = _localBudget.needs - _controller.totalExpense;
     return Container(
@@ -386,7 +349,10 @@ class _NeedsPageState extends State<NeedsPage> {
               const SizedBox(height: 4),
               Text(
                 '- ₹${_controller.totalExpense.toStringAsFixed(0)}',
-                style: const TextStyle(fontSize: 15, color: Color(0xFFCC5A7A)),
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Color.fromARGB(255, 222, 222, 222),
+                ),
               ),
             ],
           ),
@@ -404,9 +370,9 @@ class _NeedsPageState extends State<NeedsPage> {
           child: Text(
             'Your expenses',
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 14,
               color: Color(0xFF6B6B8A),
-              letterSpacing: 1.5,
+              letterSpacing: 1,
             ),
           ),
         ),
@@ -688,4 +654,39 @@ class _NeedsPageState extends State<NeedsPage> {
     );
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0F0F1A),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF6B6B8A)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Needs',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFFE8E8F5),
+          ),
+        ),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _remainingBar(),
+          const SizedBox(height: 16),
+          _draggableItemsRow(),
+          const SizedBox(height: 16),
+          _dropZone(),
+          const Spacer(),
+          _transactionLog(),
+          const SizedBox(height: 24),
+          _doneButton(),
+        ],
+      ),
+    );
+  }
 }
