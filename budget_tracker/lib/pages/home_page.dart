@@ -5,6 +5,7 @@ import './setup_page.dart';
 import './needs_page.dart';
 import './wants_page.dart';
 import './savings_page.dart';
+import 'compensate_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,6 +26,51 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadBudget() async {
     final budget = await BudgetController.loadBudget();
     setState(() => _budget = budget);
+  }
+
+  Widget _compensateCard() {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const CompensatePage()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF16162A),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFF2A2A40)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Compensate',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFFE8E8F5),
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Track money to recover',
+                  style: TextStyle(fontSize: 12, color: Color(0xFF6B6B8A)),
+                ),
+              ],
+            ),
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 14,
+              color: Color(0xFF6B6B8A),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -128,6 +174,10 @@ class _HomePageState extends State<HomePage> {
                 if (updated != null) setState(() => _budget = updated);
               },
             ),
+            const SizedBox(height: 28),
+            const Divider(color: Color(0xFF2A2A40)),
+            const SizedBox(height: 20),
+            _compensateCard(),
           ],
         ),
       ),
