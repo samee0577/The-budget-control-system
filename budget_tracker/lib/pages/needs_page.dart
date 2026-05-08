@@ -17,6 +17,13 @@ class NeedsPage extends StatefulWidget {
 class _NeedsPageState extends State<NeedsPage> {
   final NeedsController _controller = NeedsController();
   bool _isDragOver = false;
+  late BudgetModel _localBudget;
+  @override
+  void initState() {
+    super.initState();
+    _localBudget = widget.budget;
+  }
+
 
   void _showEditPopup(DroppedExpense dropped) {
     final priceController = TextEditingController(
@@ -339,7 +346,7 @@ class _NeedsPageState extends State<NeedsPage> {
   }
 
   Widget _remainingBar() {
-    final remaining = widget.budget.needs - _controller.totalExpense;
+    final remaining = _localBudget.needs - _controller.totalExpense;
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       padding: const EdgeInsets.all(16),
@@ -611,11 +618,44 @@ class _NeedsPageState extends State<NeedsPage> {
                     entry: t,
                   );
                 }
-                final newNeeds = widget.budget.needs - _controller.totalExpense;
-                final updated = widget.budget.copyWith(needs: newNeeds);
+                final newNeeds = _localBudget.needs - _controller.totalExpense;
+                final updated = _localBudget.copyWith(needs: newNeeds);
                 await BudgetController.saveBudget(updated);
+
+                // update the local budget reference
+                setState(() {
+                  _localBudget = updated;
+                  _controller.droppedItems.clear();
+                });
+
                 if (!mounted) return;
-                Navigator.pop(context, updated);
+
+                // success message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        const Icon(
+                          Icons.check_circle_outline,
+                          color: Color(0xFFCC8A3E),
+                          size: 18,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          '₹${_controller.totalExpense.toStringAsFixed(0)} logged to Needs',
+                          style: const TextStyle(color: Color(0xFFE8E8F5)),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: const Color(0xFF16162A),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: const BorderSide(color: Color(0xFF2A2A40)),
+                    ),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
               }
             : null,
         child: Container(
@@ -647,4 +687,5 @@ class _NeedsPageState extends State<NeedsPage> {
       ),
     );
   }
+
 }

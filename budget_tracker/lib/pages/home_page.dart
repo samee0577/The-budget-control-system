@@ -131,13 +131,13 @@ class _HomePageState extends State<HomePage> {
               percent: _budget!.needsPercent,
               color: const Color(0xFFCC8A3E),
               onTap: () async {
-                final updated = await Navigator.push<BudgetModel>(
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => NeedsPage(budget: _budget!),
                   ),
                 );
-                if (updated != null) setState(() => _budget = updated);
+                _loadBudget(); // reloads fresh when you come back
               },
             ),
             const SizedBox(height: 12),
