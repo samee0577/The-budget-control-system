@@ -133,7 +133,7 @@ class _CompensatePageState extends State<CompensatePage> {
           const SizedBox(height: 8),
           Text(
             _controller.totalOwed > 0
-                ? '- ₹${_controller.totalOwed.toStringAsFixed(0)}'
+                ? '₹${_controller.totalOwed.toStringAsFixed(0)}'
                 : '₹0',
             style: TextStyle(
               fontSize: 32,

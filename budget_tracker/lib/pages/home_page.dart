@@ -95,13 +95,13 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F0F1A),
+        backgroundColor: const Color.fromARGB(255, 7, 3, 25),
         elevation: 0,
         title: const Text(
           'Spndwell',
           style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
             color: Color(0xFFE8E8F5),
           ),
         ),
@@ -195,6 +195,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _totalCard() {
+    final totalIncome = _budget!.total;
+    final allocatedBudget = _budget!.needs + _budget!.wants + _budget!.savings;
+    final spent = totalIncome - allocatedBudget;
+    final unallocated = totalIncome - allocatedBudget;
+    final inHandNow = allocatedBudget - _compensateOwed;
+    final ifRecovered = allocatedBudget;
+    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -206,22 +214,72 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Total Income',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Color(0xFF6B6B8A),
+                  letterSpacing: 1.5,
+                ),
+              ),
+              Text(
+                '₹${totalIncome.toStringAsFixed(0)}',
+                style: const TextStyle(fontSize: 13, color: Color(0xFF6B6B8A)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
           const Text(
-            'Total Income',
+            'In hand now',
             style: TextStyle(
               fontSize: 11,
               color: Color(0xFF6B6B8A),
               letterSpacing: 1.5,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
-            '₹${_budget!.total.toStringAsFixed(0)}',
+            '₹${inHandNow.toStringAsFixed(0)}',
             style: const TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.w500,
               color: Color(0xFFE8E8F5),
             ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Spent',
+            style: TextStyle(
+              fontSize: 11,
+              color: Color(0xFF6B6B8A),
+              letterSpacing: 1.5,
+            ),
+          ),
+          Text(
+            '₹${spent.toStringAsFixed(0)}',
+            style: const TextStyle(fontSize: 13, color: Color(0xFF6B6B8A)),
+          ),
+          const Divider(color: Color(0xFF2A2A40)),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                '+ if recovered',
+                style: TextStyle(fontSize: 12, color: Color(0xFF6B6B8A)),
+              ),
+              Text(
+                '₹${ifRecovered.toStringAsFixed(0)}',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF2EB89A),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -313,7 +371,7 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w500,
-                        color: color,
+                        color: Color(0xFFE8E8F5),
                       ),
                     ),
                   ],
