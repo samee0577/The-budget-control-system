@@ -883,7 +883,27 @@ class _HomePageState extends State<HomePage> {
               ],
             ],
           ),
-          const SizedBox(height: 12),
+          if(_compensateOwed > 0) ...[
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text(
+                '₹${_compensateOwed.toStringAsFixed(0)}',
+                style: const TextStyle(fontSize: 14, color: Color.fromARGB(255, 236, 41, 41)),
+              ),
+              const SizedBox(width: 4),
+              const Text(
+                'compensate',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color.fromARGB(219, 236, 41, 41),
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
+          ],
+          const SizedBox(height: 8),
           Row(
             children: [
               Text(
