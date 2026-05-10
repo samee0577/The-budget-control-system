@@ -584,8 +584,8 @@ class _NeedsPageState extends State<NeedsPage> {
                     entry: t,
                   );
                 }
-                final newNeeds = _localBudget.needs - _controller.totalExpense;
-                final updated = _localBudget.copyWith(needs: newNeeds);
+                final newNeeds = _localBudget.needsRemaining - _controller.totalExpense;
+                final updated = _localBudget.copyWith(needsRemaining: newNeeds);
                 await BudgetController.saveBudget(updated);
 
                 // update the local budget reference

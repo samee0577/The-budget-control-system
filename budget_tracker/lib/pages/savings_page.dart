@@ -619,8 +619,8 @@ class _SavingsPageState extends State<SavingsPage> {
                     entry: t,
                   );
                 }
-                final newSavings = _localBudget.savings - _controller.totalExpense;
-                final updated = _localBudget.copyWith(savings: newSavings);
+                final newSavings = _localBudget.savingsRemaining - _controller.totalExpense;
+                final updated = _localBudget.copyWith(savingsRemaining: newSavings);
                 await BudgetController.saveBudget(updated);
 
                 setState(() {

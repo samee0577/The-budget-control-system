@@ -586,8 +586,8 @@ class _WantsPageState extends State<WantsPage> {
                     entry: t,
                   );
                 }
-                final newWants = _localBudget.wants - _controller.totalExpense;
-                final updated = _localBudget.copyWith(wants: newWants);
+                  final newWants = _localBudget.wantsRemaining - _controller.totalExpense;
+                  final updated = _localBudget.copyWith(wantsRemaining: newWants);
                 await BudgetController.saveBudget(updated);
 
                 setState(() {

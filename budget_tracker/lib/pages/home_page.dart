@@ -290,6 +290,9 @@ class _HomePageState extends State<HomePage> {
                                     needs: _budget!.needs + addNeeds,
                                     wants: _budget!.wants + addWants,
                                     savings: _budget!.savings + addSavings,
+                                    needsRemaining: _budget!.needsRemaining + addNeeds,
+                                    wantsRemaining: _budget!.wantsRemaining + addWants,
+                                    savingsRemaining: _budget!.savingsRemaining + addSavings,
                                     unallocated: newUnallocated,
                                   );
 
@@ -534,6 +537,9 @@ class _HomePageState extends State<HomePage> {
                                     needs: _budget!.needs + addNeeds,
                                     wants: _budget!.wants + addWants,
                                     savings: _budget!.savings + addSavings,
+                                    needsRemaining: _budget!.needsRemaining + addNeeds,
+                                    wantsRemaining: _budget!.wantsRemaining + addWants,
+                                    savingsRemaining: _budget!.savingsRemaining + addSavings,
                                     unallocated: newUnallocated,
                                   );
                                   await BudgetController.saveBudget(updated);
@@ -692,7 +698,7 @@ class _HomePageState extends State<HomePage> {
             _sectionCard(
               label: 'Needs',
               total: _budget!.needs,
-              remaining: _budget!.needs,
+              remaining: _budget!.needsRemaining,
               percent: _budget!.needsPercent,
               color: const Color(0xFFCC8A3E),
               onTap: () async {
@@ -709,7 +715,7 @@ class _HomePageState extends State<HomePage> {
             _sectionCard(
               label: 'Wants',
               total: _budget!.wants,
-              remaining: _budget!.wants,
+              remaining: _budget!.wantsRemaining,
               percent: _budget!.wantsPercent,
               color: const Color(0xFFCC5A7A),
               onTap: () async {
@@ -726,7 +732,7 @@ class _HomePageState extends State<HomePage> {
             _sectionCard(
               label: 'Savings',
               total: _budget!.savings,
-              remaining: _budget!.savings,
+              remaining: _budget!.savingsRemaining,
               percent: _budget!.savingsPercent,
               color: const Color(0xFF2EB89A),
               onTap: () async {
@@ -752,9 +758,9 @@ class _HomePageState extends State<HomePage> {
   Widget _totalCard() {
     final unallocated = _budget!.unallocated;
     final totalIncome = _budget!.total;
-    final spent = totalIncome - _budget!.needs - _budget!.wants - _budget!.savings;
+    final spent = _budget!.totalSpent;
     final inHandNow = totalIncome - spent - _compensateOwed + unallocated;
-    final ifRecovered = _budget!.needs + _budget!.wants + _budget!.savings;
+    final ifRecovered = _budget!.needsRemaining + _budget!.wantsRemaining + _budget!.savingsRemaining;
 
     return Container(
       width: double.infinity,
