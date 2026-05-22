@@ -7,6 +7,7 @@ import './needs_page.dart';
 import './wants_page.dart';
 import './savings_page.dart';
 import 'compensate_page.dart';
+import '../controllers/borrow_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,6 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   BudgetModel? _budget;
   double _compensateOwed = 0;
+  double _borrowedTotal = 0;
 
   @override
   void initState() {
@@ -290,9 +292,12 @@ class _HomePageState extends State<HomePage> {
                                     needs: _budget!.needs + addNeeds,
                                     wants: _budget!.wants + addWants,
                                     savings: _budget!.savings + addSavings,
-                                    needsRemaining: _budget!.needsRemaining + addNeeds,
-                                    wantsRemaining: _budget!.wantsRemaining + addWants,
-                                    savingsRemaining: _budget!.savingsRemaining + addSavings,
+                                    needsRemaining:
+                                        _budget!.needsRemaining + addNeeds,
+                                    wantsRemaining:
+                                        _budget!.wantsRemaining + addWants,
+                                    savingsRemaining:
+                                        _budget!.savingsRemaining + addSavings,
                                     unallocated: newUnallocated,
                                   );
 
@@ -537,9 +542,12 @@ class _HomePageState extends State<HomePage> {
                                     needs: _budget!.needs + addNeeds,
                                     wants: _budget!.wants + addWants,
                                     savings: _budget!.savings + addSavings,
-                                    needsRemaining: _budget!.needsRemaining + addNeeds,
-                                    wantsRemaining: _budget!.wantsRemaining + addWants,
-                                    savingsRemaining: _budget!.savingsRemaining + addSavings,
+                                    needsRemaining:
+                                        _budget!.needsRemaining + addNeeds,
+                                    wantsRemaining:
+                                        _budget!.wantsRemaining + addWants,
+                                    savingsRemaining:
+                                        _budget!.savingsRemaining + addSavings,
                                     unallocated: newUnallocated,
                                   );
                                   await BudgetController.saveBudget(updated);
@@ -589,10 +597,13 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadBudget() async {
     final budget = await BudgetController.loadBudget();
     final compensate = CompensateController();
+    final borrow = BorrowController();
     await compensate.loadCards();
+    await borrow.loadCards();
     setState(() {
       _budget = budget;
       _compensateOwed = compensate.totalOwed;
+      _borrowedTotal = borrow.totalBorrowed;
     });
   }
 
@@ -755,12 +766,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _pill(String label, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label, style: TextStyle(fontSize: 11, color: color)),
+          const SizedBox(width: 6),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _totalCard() {
     final unallocated = _budget!.unallocated;
     final totalIncome = _budget!.total;
     final spent = _budget!.totalSpent;
-    final inHandNow = totalIncome - spent - _compensateOwed + unallocated;
-    final ifRecovered = _budget!.needsRemaining + _budget!.wantsRemaining + _budget!.savingsRemaining;
+    final inHandNow =
+        totalIncome - spent - _compensateOwed + unallocated + _borrowedTotal;
+    final ifRecovered =
+        _budget!.needsRemaining +
+        _budget!.wantsRemaining +
+        _budget!.savingsRemaining;
 
     return Container(
       width: double.infinity,
@@ -883,25 +924,28 @@ class _HomePageState extends State<HomePage> {
               ],
             ],
           ),
-          if(_compensateOwed > 0) ...[
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Text(
-                '₹${_compensateOwed.toStringAsFixed(0)}',
-                style: const TextStyle(fontSize: 14, color: Color.fromARGB(255, 236, 41, 41)),
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                'compensate',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color.fromARGB(219, 236, 41, 41),
-                  letterSpacing: 1,
+          if (_compensateOwed > 0) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Text(
+                  '₹${_compensateOwed.toStringAsFixed(0)}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color.fromARGB(255, 236, 41, 41),
+                  ),
                 ),
-              ),
-            ],
-          ),
+                const SizedBox(width: 4),
+                const Text(
+                  'compensate',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color.fromARGB(219, 236, 41, 41),
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
           ],
           const SizedBox(height: 8),
           Row(
@@ -948,6 +992,27 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
+          if (_compensateOwed > 0 || _borrowedTotal > 0) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                if (_compensateOwed > 0)
+                  _pill(
+                    'To collect',
+                    '₹${_compensateOwed.toStringAsFixed(0)}',
+                    const Color(0xFF2EB89A),
+                  ),
+                if (_compensateOwed > 0 && _borrowedTotal > 0)
+                  const SizedBox(width: 8),
+                if (_borrowedTotal > 0)
+                  _pill(
+                    'To repay',
+                    '₹${_borrowedTotal.toStringAsFixed(0)}',
+                    const Color(0xFFCC5A7A),
+                  ),
+              ],
+            ),
+          ],
         ],
       ),
     );
